@@ -1,0 +1,73 @@
+name: Build, test & browser checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/Stockroom.Browser/package-lock.json
+      - name: Restore locked dependencies
+        run: dotnet restore --locked-mode
+      - name: Build with warnings as errors
+        run: dotnet build -c Release --no-restore
+      - name: Check C# formatting
+        run: dotnet format --verify-no-changes --no-restore
+      - name: Test real SQLite transactions and authorization
+        run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory TestResults
+      - name: Install browser checks
+        run: npm ci --prefix tests/Stockroom.Browser
+      - name: Check frontend formatting
+        run: npm run format:check --prefix tests/Stockroom.Browser
+      - name: Install Chromium
+        run: cd tests/Stockroom.Browser && npx playwright install --with-deps chromium
+      - name: Test browser workflow and mobile layout
+        run: |
+          ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Stockroom.Web -c Release --no-build --urls http://127.0.0.1:5080 > /tmp/stockroom.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:5080/health/ready > /dev/null; then break; fi
+            sleep 1
+          done
+          npm test --prefix tests/Stockroom.Browser
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: TestResults
+      - name: Show server logs on failure
+        if: failure()
+        run: cat /tmp/stockroom.log 2>/dev/null || true
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build container
+        run: docker build -t stockroom:ci .
+      - name: Start local demo container
+        run: docker run -d --name stockroom -p 127.0.0.1:8080:8080 -e ASPNETCORE_ENVIRONMENT=Development -e Demo__Enabled=true stockroom:ci
+      - name: Check readiness
+        run: |
+          for attempt in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:8080/health/ready; then exit 0; fi
+            sleep 1
+          done
+          docker logs stockroom
+          exit 1

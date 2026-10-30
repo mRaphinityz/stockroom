@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta
+      name="description"
+      content="Stockroom — inventory, reservations, and a clear record of every change."
+    />
+    <title>Stockroom · Inventory & orders</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="icon-box" viewBox="0 0 24 24">
+        <path d="m12 3 9 5v8l-9 5-9-5V8l9-5Zm0 9 9-4M12 12 3 8m9 4v9M7.5 5.5l9 5" />
+      </symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </symbol>
+      <symbol id="icon-orders" viewBox="0 0 24 24">
+        <path d="M8 4H5v17l4-2 3 2 3-2 4 2V4h-3M9 3h6v4H9V3Zm-1 9h8m-8 4h5" />
+      </symbol>
+      <symbol id="icon-activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4" /></symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" /></symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 5 5" />
+      </symbol>
+      <symbol id="icon-alert" viewBox="0 0 24 24">
+        <path d="m12 3 10 18H2L12 3Zm0 6v5m0 3v1" />
+      </symbol>
+      <symbol id="icon-logout" viewBox="0 0 24 24">
+        <path d="M9 4H4v16h5m6-13 5 5-5 5m-6-5h11" />
+      </symbol>
+    </svg>
+
+    <section id="login-screen" class="login-screen" hidden>
+      <div class="login-story">
+        <a class="brand" href="/" aria-label="Stockroom home"
+          ><span class="brand-mark"
+            ><svg class="icon"><use href="#icon-box" /></svg></span
+          >stockroom<span class="brand-dot">.</span></a
+        >
+        <div class="login-pitch">
+          <span class="eyebrow">A LITTLE ORDER GOES A LONG WAY</span>
+          <h1>Make room for<br />better operations.</h1>
+          <p>
+            Your inventory, orders, and every change.<br />One clear picture of the work that
+            matters.
+          </p>
+          <div class="feature-line"><span>01</span> Know what’s available.</div>
+          <div class="feature-line"><span>02</span> Reserve with confidence.</div>
+          <div class="feature-line"><span>03</span> Keep every change accountable.</div>
+        </div>
+        <span class="login-footnote">Built with C# & ASP.NET Core · Portfolio edition</span>
+      </div>
+      <div class="login-panel">
+        <div class="login-card">
+          <span class="eyebrow">YOUR OPERATIONS, CONNECTED</span>
+          <h2>Welcome to Stockroom</h2>
+          <p class="muted">Sign in to your workspace.</p>
+          <form id="login-form">
+            <label for="email">Email address</label
+            ><input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              maxlength="254"
+              required
+              placeholder="you@company.com"
+            />
+            <label for="password">Password</label
+            ><input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              maxlength="128"
+              required
+            />
+            <p id="login-error" class="form-error" role="alert"></p>
+            <button class="button primary full" type="submit">
+              Sign in <svg class="icon"><use href="#icon-arrow" /></svg>
+            </button>
+          </form>
+          <div id="demo-login" class="demo-login" hidden>
+            <span class="eyebrow">TAKE A LOOK AROUND</span>
+            <p>Local demo accounts with sample inventory.</p>
+            <div class="button-row">
+              <button class="button secondary" data-demo="manager">Try as manager</button
+              ><button class="button secondary" data-demo="viewer">Try as viewer</button>
+            </div>
+            <small>Managers can make changes. Viewers have read-only access.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="workspace" class="workspace" hidden>
+      <aside class="sidebar">
+        <a class="brand" href="#overview"
+          ><span class="brand-mark"
+            ><svg class="icon"><use href="#icon-box" /></svg></span
+          >stockroom<span class="brand-dot">.</span></a
+        >
+        <div class="workspace-label">
+          <span class="workspace-avatar">S</span>
+          <div>Demo workspace<small>Inventory & operations</small></div>
+          <span class="workspace-indicator"></span>
+        </div>
+        <span class="nav-label">WORKSPACE</span>
+        <nav aria-label="Main navigation">
+          <a href="#overview" data-nav="overview"
+            ><svg class="icon"><use href="#icon-grid" /></svg>Overview</a
+          ><a href="#inventory" data-nav="inventory"
+            ><svg class="icon"><use href="#icon-box" /></svg>Inventory
+            <span id="inventory-count" class="nav-count"></span></a
+          ><a href="#orders" data-nav="orders"
+            ><svg class="icon"><use href="#icon-orders" /></svg>Orders
+            <span id="order-count" class="nav-count"></span></a
+          ><a href="#activity" data-nav="activity"
+            ><svg class="icon"><use href="#icon-activity" /></svg>Activity</a
+          >
+        </nav>
+        <div class="sidebar-note">
+          <span class="tiny-tag">BUILT FOR CLARITY</span>
+          <p>Every unit accounted for.<br />Every change on record.</p>
+          <a href="/openapi/v1.json" target="_blank" rel="noopener"
+            >Explore the API <span aria-hidden="true">↗</span></a
+          >
+        </div>
+        <div class="account">
+          <span class="account-avatar" id="account-avatar">M</span>
+          <div>
+            <strong id="account-name">Manager</strong
+            ><small id="account-role">Workspace manager</small>
+          </div>
+          <button id="logout" class="icon-button" aria-label="Sign out">
+            <svg class="icon"><use href="#icon-logout" /></svg>
+          </button>
+        </div>
+      </aside>
+      <div class="main-shell">
+        <header class="topbar">
+          <span
+            ><span class="muted">Workspace</span><span class="breadcrumb-slash">/</span
+            ><strong id="breadcrumb">Overview</strong></span
+          ><span class="topbar-right"
+            ><span id="demo-badge" class="demo-badge" hidden>DEMO DATA</span><time id="today"></time
+          ></span>
+        </header>
+        <main id="main" tabindex="-1">
+          <div id="page-content"><p class="loading">Loading your workspace…</p></div>
+        </main>
+        <footer class="footer">
+          <span><span class="status-dot"></span> Stockroom · Inventory & order management</span
+          ><span>C# / ASP.NET Core / SQLite</span>
+        </footer>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <dialog id="modal" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow" id="modal-eyebrow">WORKSPACE</span>
+          <h2 id="modal-title"></h2>
+        </div>
+        <button class="icon-button modal-close" aria-label="Close dialog">×</button>
+      </div>
+      <div id="modal-body"></div>
+    </dialog>
+  </body>
+</html>

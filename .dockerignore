@@ -1,0 +1,11 @@
+**/bin
+**/obj
+**/App_Data
+.git
+.local
+artifacts
+TestResults
+**/node_modules
+docs
+tests
+.env

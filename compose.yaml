@@ -1,0 +1,17 @@
+services:
+  stockroom:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Demo__Enabled: "true"
+      DataProtection__KeyPath: /app/keys
+    volumes:
+      - stockroom-data:/app/App_Data
+      - stockroom-keys:/app/keys
+    restart: unless-stopped
+
+volumes:
+  stockroom-data:
+  stockroom-keys:

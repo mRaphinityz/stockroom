@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+**/node_modules/
+.vs/
+.idea/
+.DS_Store
+TestResults/
+artifacts/
+**/App_Data/
+*.db
+*.db-shm
+*.db-wal
+.env
+*.user
+*.suo
+.local/
